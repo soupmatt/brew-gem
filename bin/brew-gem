@@ -20,7 +20,7 @@ require 'erb'
 template = ERB.new(File.read(__FILE__).split(/^__END__$/, 2)[1].strip)
 
 open("#{`brew --prefix`.chomp}/Library/Formula/#{name}.rb", 'w') do |f|
-  f << template.result(binding)
+  f.puts template.result(binding)
 end
 
 if command == 'install'
