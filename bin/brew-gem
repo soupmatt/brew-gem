@@ -1,11 +1,7 @@
 #!/usr/bin/env ruby
 
-unless (command = ARGV[0]) && %w(install generate).include?(command)
-  abort "brew gem <install|generate> <name>"
-end
-
-unless name = ARGV[1]
-  abort "Please specify a gem name (e.g. brew gem #{command} <name>)"
+unless name = ARGV[0]
+  abort "Please specify a gem name (e.g. brew gem <name>)"
 end
 
 gems = `gem list --remote "^#{name}$"`.lines
@@ -24,9 +20,7 @@ open("#{formula}/#{name}.rb", 'w') do |f|
   f.puts template.result(binding)
 end
 
-if command == 'install'
-  exec "brew install #{name}"
-end
+exec "brew install #{name}"
 
 __END__
 require 'formula'
