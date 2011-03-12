@@ -22,7 +22,7 @@ This formula installs and unpacks all the dependencies under the Cellar path. So
 Usage
 -----
 
-    brew gem install heroku
+    brew gem heroku
 
 Philosophy
 ----------
