@@ -23,7 +23,7 @@ begin
     f.puts template.result(binding)
   end
 
-  system "brew install #{name}"
+  system "brew install #{filename}"
 ensure
   File.unlink filename
 end
