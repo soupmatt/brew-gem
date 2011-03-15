@@ -5,7 +5,7 @@ brew-gem -- install gems as homebrew formulas
 
 It works by generating a stub formula for homebrew, which looks something like this:
 
-    class Ronn <Formula
+    class Ronn < Formula
       def initialize(*args)
         @name = "ronn"
         @version = "0.7.3"
