@@ -31,8 +31,8 @@ end
 __END__
 require 'formula'
 
-class RubyGemFormula <Formula
-  class NoopDownloadStrategy <AbstractDownloadStrategy
+class RubyGemFormula < Formula
+  class NoopDownloadStrategy < AbstractDownloadStrategy
     def fetch; end
     def stage; end
   end
@@ -63,7 +63,7 @@ load "#{file}"
   end
 end
 
-class <%= klass %> <RubyGemFormula
+class <%= klass %> < RubyGemFormula
   url "http://rubygems.org/downloads/<%= name %>-<%= version %>.gem"
   homepage "http://rubygems.org/gems/<%= name %>"
 end
