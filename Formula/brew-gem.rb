@@ -1,9 +1,9 @@
 require 'formula'
 
 class BrewGem < Formula
-  url 'https://github.com/josh/brew-gem/tarball/v0.1.1'
+  url 'https://github.com/josh/brew-gem/tarball/v0.1.2'
   homepage 'https://github.com/josh/brew-gem'
-  md5 '73359fae1694b9ca84469c9a6960ae37'
+  md5 'c39f1c5db2e4d18349109aeed8136970'
 
   def install
     bin.install 'bin/brew-gem'
