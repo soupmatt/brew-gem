@@ -22,7 +22,7 @@ This formula installs and unpacks all the dependencies under the Cellar path. So
 Install
 -------
 
-    brew install https://github.com/josh/brew-gem/raw/master/Formula/brew-gem.rb
+    brew install brew-gem
 
 Usage
 -----
