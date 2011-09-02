@@ -29,6 +29,13 @@ Usage
 
     brew gem heroku
 
+Additionally, you may declare additional dependent gems that are
+specifically required by the original gem. For example, let's say you
+wanted to install capistrano and you need the capistrano-ext gem as
+well.
+
+    brew gem capistrano capistrano-ext
+
 Philosophy
 ----------
 
