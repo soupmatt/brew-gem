@@ -55,6 +55,7 @@ class RubyGemFormula < Formula
       (bin+file.basename).open('w') do |f|
         f << <<-RUBY
 #!/usr/bin/env ruby
+ENV['GEM_HOME']="#{prefix}"
 $:.unshift(#{ruby_libs.map(&:inspect).join(",")})
 load "#{file}"
         RUBY
