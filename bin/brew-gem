@@ -1,17 +1,18 @@
 #!/usr/bin/env ruby
 
-unless name = ARGV[0]
-  abort "Please specify a gem name (e.g. brew gem <name> [<dependency>[ <dependency>...]])"
+if  !ARGV[0] || ARGV[0] == 'help'
+  abort "Please specify a gem name (e.g. brew gem command <name>)
+  install - Install a brew gem
+  uninstall - Uninstall a brew gem"
 end
 
-version = []
-ARGV.each_with_index do |gem_name, i|
-  gems = `gem list --remote "^#{gem_name}$"`.lines
-  unless gems.detect { |f| f =~ /^#{gem_name} \(([^\s,]+).*\)/ }
-    abort "Could not find a valid gem '#{gem_name}'"
-  end
-  version[i] = $1
+command = ARGV[0]
+name = ARGV[1]
+gems = `gem list --remote "^#{name}$"`.lines
+unless gems.detect { |f| f =~ /^#{name} \(([^\s,]+).*\)/ }
+  abort "Could not find a valid gem '#{name}'"
 end
+version = $1
 
 klass = name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { $1.upcase }.gsub('+', 'x')
 
@@ -26,7 +27,7 @@ begin
     f.puts template.result(binding)
   end
 
-  system "brew install #{filename}"
+  system "brew #{command} #{filename}"
 ensure
   File.unlink filename
 end
@@ -50,17 +51,18 @@ class RubyGemFormula < Formula
     # they might not be there if, say, we change to a different rvm gemset
     ENV['GEM_HOME']="#{prefix}"
     ENV['GEM_PATH']="#{prefix}"
-<% ARGV.each_with_index do |gem_name, i| %>
-    system "gem", "install", "<%= gem_name %>",
-             "--version", "<%= version[i] %>",
+    system "gem", "install", "<%= name %>",
+             "--version", "<%= version %>",
              "--no-rdoc", "--no-ri",
-             "--install-dir", prefix
-<% end %>
+             "--no-user-install",
+             "--install-dir", prefix,
+             "--bindir", bin
+
     bin.rmtree
     bin.mkpath
 
     ruby_libs = Dir.glob("#{prefix}/gems/*/lib")
-    Pathname.glob("#{prefix}/gems/#{name}-#{version[0]}/bin/*").each do |file|
+    Pathname.glob("#{prefix}/gems/#{name}-#{version}/bin/*").each do |file|
       (bin+file.basename).open('w') do |f|
         f << <<-RUBY
 #!/usr/bin/ruby
@@ -74,6 +76,7 @@ load "#{file}"
 end
 
 class <%= klass %> < RubyGemFormula
-  url "http://rubygems.org/downloads/<%= name %>-<%= version[0] %>.gem"
+  url "http://rubygems.org/downloads/<%= name %>-<%= version %>.gem"
   homepage "http://rubygems.org/gems/<%= name %>"
 end
+
