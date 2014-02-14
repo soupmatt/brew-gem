@@ -8,15 +8,12 @@ if  !ARGV[0] || ARGV[0] == 'help'
 end
 
 command = ARGV[0]
-
-version = []
-ARGV[1,-1].each_with_index do |gem_name, i|
-  gems = `gem list --remote "^#{gem_name}$"`.lines
-  unless gems.detect { |f| f =~ /^#{gem_name} \(([^\s,]+).*\)/ }
-    abort "Could not find a valid gem '#{gem_name}'"
-  end
-  version[i] = $1
+name = ARGV[1]
+gems = `gem list --remote "^#{name}$"`.lines
+unless gems.detect { |f| f =~ /^#{name} \(([^\s,]+).*\)/ }
+  abort "Could not find a valid gem '#{name}'"
 end
+version = $1
 
 klass = name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { $1.upcase }.gsub('+', 'x')
 
@@ -55,8 +52,8 @@ class RubyGemFormula < Formula
     # they might not be there if, say, we change to a different rvm gemset
     ENV['GEM_HOME']="#{prefix}"
     ENV['GEM_PATH']="#{prefix}"
-    system "gem", "install", "<%= gem_name %>",
-             "--version", "<%= version[i] %>",
+    system "gem", "install", "<%= name %>",
+             "--version", "<%= version %>",
              "--no-rdoc", "--no-ri",
              "--no-user-install",
              "--install-dir", prefix,
@@ -66,7 +63,7 @@ class RubyGemFormula < Formula
     bin.mkpath
 
     ruby_libs = Dir.glob("#{prefix}/gems/*/lib")
-    Pathname.glob("#{prefix}/gems/#{name}-#{version[0]}/bin/*").each do |file|
+    Pathname.glob("#{prefix}/gems/#{name}-#{version}/bin/*").each do |file|
       (bin+file.basename).open('w') do |f|
         f << <<-RUBY
 #!/usr/bin/ruby
@@ -80,6 +77,7 @@ load "#{file}"
 end
 
 class <%= klass %> < RubyGemFormula
-  url "http://rubygems.org/downloads/<%= name %>-<%= version[0] %>.gem"
+  url "http://rubygems.org/downloads/<%= name %>-<%= version %>.gem"
   homepage "http://rubygems.org/gems/<%= name %>"
 end
+
