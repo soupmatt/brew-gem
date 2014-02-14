@@ -1,11 +1,16 @@
 #!/usr/bin/env ruby
 
-unless name = ARGV[0]
-  abort "Please specify a gem name (e.g. brew gem <name> [<dependency>[ <dependency>...]])"
+if  !ARGV[0] || ARGV[0] == 'help'
+  abort "Please specify a gem name (e.g. brew gem command <name>)
+    install - Install a brew gem
+    uninstall - Uninstall brew gems
+  "
 end
 
+command = ARGV[0]
+
 version = []
-ARGV.each_with_index do |gem_name, i|
+ARGV[1,-1].each_with_index do |gem_name, i|
   gems = `gem list --remote "^#{gem_name}$"`.lines
   unless gems.detect { |f| f =~ /^#{gem_name} \(([^\s,]+).*\)/ }
     abort "Could not find a valid gem '#{gem_name}'"
@@ -26,7 +31,7 @@ begin
     f.puts template.result(binding)
   end
 
-  system "brew install #{filename}"
+  system "brew #{command} #{filename}"
 ensure
   File.unlink filename
 end
@@ -50,12 +55,13 @@ class RubyGemFormula < Formula
     # they might not be there if, say, we change to a different rvm gemset
     ENV['GEM_HOME']="#{prefix}"
     ENV['GEM_PATH']="#{prefix}"
-<% ARGV.each_with_index do |gem_name, i| %>
     system "gem", "install", "<%= gem_name %>",
              "--version", "<%= version[i] %>",
              "--no-rdoc", "--no-ri",
-             "--install-dir", prefix
-<% end %>
+             "--no-user-install",
+             "--install-dir", prefix,
+             "--bindir", bin
+
     bin.rmtree
     bin.mkpath
 
