@@ -2,9 +2,8 @@
 
 if  !ARGV[0] || ARGV[0] == 'help'
   abort "Please specify a gem name (e.g. brew gem command <name>)
-    install - Install a brew gem
-    uninstall - Uninstall brew gems
-  "
+  install - Install a brew gem
+  uninstall - Uninstall a brew gem"
 end
 
 command = ARGV[0]
