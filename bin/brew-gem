@@ -19,7 +19,8 @@ klass = name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { $1.upcase }.gsub('+', 'x'
 require 'erb'
 template = ERB.new(File.read(__FILE__).split(/^__END__$/, 2)[1].strip)
 
-filename = File.join "/usr/local/Cellar/", "#{name}.rb"
+require 'tempfile'
+filename = File.join Dir.tmpdir, "#{name}.rb"
 
 begin
   open(filename, 'w') do |f|
@@ -27,6 +28,8 @@ begin
   end
 
   system "brew #{command} #{filename}"
+ensure
+  File.unlink filename
 end
 
 __END__
