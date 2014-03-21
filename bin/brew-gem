@@ -3,6 +3,7 @@
 if  !ARGV[0] || ARGV[0] == 'help'
   abort "Please specify a gem name (e.g. brew gem command <name>)
   install - Install a brew gem
+  upgrade - Upgrade to the latest version of a brew gem
   uninstall - Uninstall a brew gem"
 end
 
@@ -34,7 +35,7 @@ require 'formula'
 
 class RubyGemsDownloadStrategy < AbstractDownloadStrategy
   def fetch
-    ohai "Fetching RubyGem automation"
+    ohai "Fetching #{name} from gem source"
     `cd #{HOMEBREW_CACHE} && gem fetch #{name} --version #{resource.version}`
   end
 
