@@ -40,3 +40,21 @@ Philosophy
 ----------
 
 This is **not** for installing development libraries, but for standalone binary tools that you want system wide.
+
+Troubleshooting
+----------
+
+If your seeing build errors similar to this:
+```shell
+==> Fetching opsicle from gem source
+==> gem install /Library/Caches/Homebrew/opsicle-0.4.2.gem --no-rdoc --no-ri --no-user-install --install-dir /usr/local/Cellar/opsicle/0.4.2 --bindir /usr/local/Cellar/opsicle/0.4.2/bin
+make: *** [generator.bundle] Error 1
+Gem files will remain installed in /usr/local/Cellar/opsicle/0.4.2/gems/json-1.8.1 for inspection.
+Results logged to /usr/local/Cellar/opsicle/0.4.2/gems/json-1.8.1/ext/json/ext/generator/gem_make.out
+READ THIS: https://github.com/Homebrew/homebrew/wiki/troubleshooting
+```
+
+You probably have xcode 5.1 installed which changed the way the compilers handle flags.
+
+You'll need to set `ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future` before installing.
+_You may want to add this to your profile so you don't have to set it each time._
