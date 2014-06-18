@@ -19,6 +19,15 @@ It works by generating a stub formula for homebrew, which looks something like t
 
 This formula installs and unpacks all the dependencies under the Cellar path. So the package is completely self contained.
 
+Dependencies
+------------
+This requires a system rubygems version of 2.3 or greater
+There is a bug prior to 2.3 that doesn't install the full dependency tree properly when you use the install-dir flag.
+
+```
+sudo /usr/bin/gem update --system
+```
+
 Install
 -------
 
