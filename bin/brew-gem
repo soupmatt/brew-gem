@@ -85,6 +85,7 @@ class <%= klass %> < Formula
         f << <<-RUBY
 #!/usr/bin/ruby
 ENV['GEM_HOME']="#{prefix}"
+ENV['GEM_PATH']="#{prefix}"
 $:.unshift(#{ruby_libs.map(&:inspect).join(",")})
 load "#{file}"
         RUBY
