@@ -36,14 +36,19 @@ Install
 Usage
 -----
 
-    brew gem heroku
+    brew gem install heroku
 
-Additionally, you may declare additional dependent gems that are
-specifically required by the original gem. For example, let's say you
-wanted to install capistrano and you need the capistrano-ext gem as
-well.
+To install a specific version:
 
-    brew gem capistrano capistrano-ext
+    brew gem install heroku 3.8.3
+    
+To upgrade:
+
+    brew gem upgrade heroku
+    
+To uninstall:
+
+    brew gem uninstall heroku
 
 Philosophy
 ----------
