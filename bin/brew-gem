@@ -79,6 +79,14 @@ class <%= klass %> < Formula
     bin.rmtree
     bin.mkpath
 
+    bash_completion.install 'bash_completion.sh' if File.exists?('bash_completion.sh')
+    zsh_completion.install  'zsh_completion.zsh' if File.exists?('zsh_completion.zsh')
+
+    if Dir.exists?('completions')
+      bash_completion.install Dir.glob("completions/*.sh").first
+      zsh_completion.install  Dir.glob("completions/*.zsh").first
+    end
+
     ruby_libs = Dir.glob("#{prefix}/gems/*/lib")
     Pathname.glob("#{prefix}/gems/#{name}-#{version}/bin/*").each do |file|
       (bin+file.basename).open('w') do |f|
