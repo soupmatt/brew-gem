@@ -71,7 +71,9 @@ class <%= klass %> < Formula
     ENV['GEM_HOME']="#{prefix}"
     ENV['GEM_PATH']="#{prefix}"
     system "gem", "install", "#{HOMEBREW_CACHE}/#{name}-#{version}.gem",
-             "--no-rdoc", "--no-ri",
+             "--no-ri",
+             "--no-rdoc",
+             "--no-wrapper",
              "--no-user-install",
              "--install-dir", prefix,
              "--bindir", bin
