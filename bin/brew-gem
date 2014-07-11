@@ -15,7 +15,7 @@ unless gems.detect { |f| f =~ /^#{name} \(([^\s,]+).*\)/ }
 end
 version = ARGV[2] || $1
 
-klass = name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { version.upcase }.gsub('+', 'x')
+klass = name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { $1.upcase }.gsub('+', 'x')
 
 require 'erb'
 template = ERB.new(File.read(__FILE__).split(/^__END__$/, 2)[1].strip)
