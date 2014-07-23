@@ -49,8 +49,6 @@ class RubyGemsDownloadStrategy < AbstractDownloadStrategy
   def clear_cache
    cached_location.unlink if cached_location.exists?
   end
-
-  def stage; end
 end
 
 class <%= klass %> < Formula
