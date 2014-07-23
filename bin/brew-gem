@@ -39,29 +39,22 @@ require 'formula'
 class RubyGemsDownloadStrategy < AbstractDownloadStrategy
   def fetch
     ohai "Fetching #{name} from gem source"
-    `cd #{HOMEBREW_CACHE} && gem fetch #{name} --version #{resource.version}`
+    HOMEBREW_CACHE.cd do
+      system "gem", "fetch", name, "--version", resource.version
+    end
   end
 
   def cached_location
-    Pathname.new("#{HOMEBREW_CACHE}/#{name}-#{resource.version}")
+    Pathname.new("#{HOMEBREW_CACHE}/#{name}-#{resource.version}.gem")
   end
 
   def clear_cache
-   cached_location.unlink if cached_location.exists?
-  end
-
-  def stage; end
-end
-
-class Resource
-  def download_strategy
-    RubyGemsDownloadStrategy
+    cached_location.unlink if cached_location.exist?
   end
 end
-
 
 class <%= klass %> < Formula
-  url "<%= name %>"
+  url "<%= name %>", :using => RubyGemsDownloadStrategy
   version "<%= version %>"
 
   def install
@@ -70,7 +63,7 @@ class <%= klass %> < Formula
     # they might not be there if, say, we change to a different rvm gemset
     ENV['GEM_HOME']="#{prefix}"
     ENV['GEM_PATH']="#{prefix}"
-    system "gem", "install", "#{HOMEBREW_CACHE}/#{name}-#{version}.gem",
+    system "gem", "install", cached_download,
              "--no-ri",
              "--no-rdoc",
              "--no-wrapper",
@@ -78,7 +71,7 @@ class <%= klass %> < Formula
              "--install-dir", prefix,
              "--bindir", bin
 
-    bin.rmtree
+    bin.rmtree if bin.exist?
     bin.mkpath
 
     bash_completion.install 'bash_completion.sh' if File.exists?('bash_completion.sh')
