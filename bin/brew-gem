@@ -53,15 +53,8 @@ class RubyGemsDownloadStrategy < AbstractDownloadStrategy
   def stage; end
 end
 
-class Resource
-  def download_strategy
-    RubyGemsDownloadStrategy
-  end
-end
-
-
 class <%= klass %> < Formula
-  url "<%= name %>"
+  url "<%= name %>", :using => RubyGemsDownloadStrategy
   version "<%= version %>"
 
   def install
