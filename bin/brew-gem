@@ -74,16 +74,17 @@ class <%= klass %> < Formula
     bin.rmtree if bin.exist?
     bin.mkpath
 
-    bash_completion.install 'bash_completion.sh' if File.exists?('bash_completion.sh')
-    zsh_completion.install  'zsh_completion.zsh' if File.exists?('zsh_completion.zsh')
+    brew_gem_prefix = prefix/"gems/#{name}-#{version}"
+    bash_completion.install '#{brew_gem_prefix}/bash_completion.sh' if File.exists?('#{brew_gem_prefix}/bash_completion.sh')
+    zsh_completion.install  '#{brew_gem_prefix}/zsh_completion.zsh' if File.exists?('#{brew_gem_prefix}/zsh_completion.zsh')
 
-    if Dir.exists?('completions')
-      bash_completion.install Dir.glob("completions/*.sh").first
-      zsh_completion.install  Dir.glob("completions/*.zsh").first
+    if Dir.exists?("#{brew_gem_prefix}/completions")
+      bash_completion.install Dir.glob("#{brew_gem_prefix}/completions/*.sh").first
+      zsh_completion.install  Dir.glob("#{brew_gem_prefix}/completions/*.zsh").first
     end
 
     ruby_libs = Dir.glob("#{prefix}/gems/*/lib")
-    Pathname.glob("#{prefix}/gems/#{name}-#{version}/bin/*").each do |file|
+    Pathname.glob("#{brew_gem_prefix}/bin/*").each do |file|
       (bin+file.basename).open('w') do |f|
         f << <<-RUBY
 #!/usr/bin/ruby
