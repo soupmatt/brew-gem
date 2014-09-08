@@ -75,13 +75,16 @@ class <%= klass %> < Formula
     bin.mkpath
 
     brew_gem_prefix = prefix/"gems/#{name}-#{version}"
-    bash_completion.install '#{brew_gem_prefix}/bash_completion.sh' if File.exists?('#{brew_gem_prefix}/bash_completion.sh')
-    zsh_completion.install  '#{brew_gem_prefix}/zsh_completion.zsh' if File.exists?('#{brew_gem_prefix}/zsh_completion.zsh')
 
-    if Dir.exists?("#{brew_gem_prefix}/completions")
-      bash_completion.install Dir.glob("#{brew_gem_prefix}/completions/*.sh").first
-      zsh_completion.install  Dir.glob("#{brew_gem_prefix}/completions/*.zsh").first
-    end
+    bash_completion.install Dir[
+                              "#{brew_gem_prefix}/completion{s,}/#{name}.{bash,sh}",
+                              "#{brew_gem_prefix}/#{name}_completion{s,}.{bash,sh}"
+                            ].first
+
+    zsh_completion.install  Dir[
+                              "#{brew_gem_prefix}/completions/#{name}.zsh"
+                              "#{brew_gem_prefix}/#{name}_completion{s,}.zsh"
+                            ].first
 
     ruby_libs = Dir.glob("#{prefix}/gems/*/lib")
     Pathname.glob("#{brew_gem_prefix}/bin/*").each do |file|
