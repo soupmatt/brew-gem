@@ -50,6 +50,26 @@ To uninstall:
 
     brew gem uninstall heroku
 
+
+### BASH/ZSH Completions
+
+To make use of completions for your gem, you need to install the
+`bash-completion` formula:
+
+    brew install bash-completion
+
+And then install a gem with the completion files in the following locations:
+
+* A directory named either `completion` or `completions` with the file being
+  the name of the gem appended with the completion type.
+
+  For example:  `completions/tmuxinator.bash`
+* A file somewhere in your repo named `<your_gem_name>_completion.zsh`.
+
+Files with `.bash` and `.sh` will be associated with bash and files ending in
+`.zsh` will be associated with zsh.
+
+
 Philosophy
 ----------
 
