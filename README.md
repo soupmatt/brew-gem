@@ -19,6 +19,7 @@ It works by generating a stub formula for homebrew, which looks something like t
 
 This formula installs and unpacks all the dependencies under the Cellar path. So the package is completely self contained.
 
+
 Dependencies
 ------------
 This requires a system rubygems version of 2.3 or greater
@@ -28,10 +29,12 @@ There is a bug prior to 2.3 that doesn't install the full dependency tree proper
 sudo /usr/bin/gem update --system
 ```
 
+
 Install
 -------
 
     brew install brew-gem
+
 
 Usage
 -----
@@ -74,6 +77,7 @@ Philosophy
 ----------
 
 This is **not** for installing development libraries, but for standalone binary tools that you want system wide.
+
 
 Troubleshooting
 ----------
