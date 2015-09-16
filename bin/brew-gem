@@ -34,7 +34,7 @@ ensure
   File.unlink filename
 end
 
-# __END__
+__END__
 require 'formula'
 require 'fileutils'
 
