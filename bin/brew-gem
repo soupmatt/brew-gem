@@ -62,8 +62,8 @@ class <%= klass %> < Formula
   def install
     # Copy user's RubyGems config to temporary build home.
     buildpath_gemrc = "#{ENV['HOME']}/.gemrc}"
-    if File.exists?(user_gemrc) && !File.exists?(buildpath_gemrc)
-      FileUtils.cp(user_gemrc, buildpath_gemrc)
+    if File.exists?('<%= user_gemrc %>') && !File.exists?(buildpath_gemrc)
+      FileUtils.cp('<%= user_gemrc %>', buildpath_gemrc)
     end
 
     # set GEM_HOME and GEM_PATH to make sure we package all the dependent gems
