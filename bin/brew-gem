@@ -16,7 +16,7 @@ end
 version = ARGV[2] || $1
 
 klass = name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { $1.upcase }.gsub('+', 'x')
-user_gemrc = "#{ENV['HOME']}/.gemrc}"
+user_gemrc = "#{ENV['HOME']}/.gemrc"
 
 require 'erb'
 template = ERB.new(File.read(__FILE__).split(/^__END__$/, 2)[1].strip)
