@@ -53,6 +53,14 @@ To uninstall:
 
     brew gem uninstall heroku
 
+To check information:
+
+    brew gem info heroku
+
+Note:
+
+Installed gems are listed in `brew list` with prefix of `gem-`,
+like `gem-heroku`.
 
 ### BASH/ZSH Completions
 
