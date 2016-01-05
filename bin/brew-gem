@@ -15,14 +15,14 @@ unless gems.detect { |f| f =~ /^#{name} \(([^\s,]+).*\)/ }
 end
 version = ARGV[2] || $1
 
-klass = name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { $1.upcase }.gsub('+', 'x')
+klass = 'Gem' + name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { $1.upcase }.gsub('+', 'x')
 user_gemrc = "#{ENV['HOME']}/.gemrc"
 
 require 'erb'
 template = ERB.new(File.read(__FILE__).split(/^__END__$/, 2)[1].strip)
 
 require 'tempfile'
-filename = File.join Dir.tmpdir, "#{name}.rb"
+filename = File.join Dir.tmpdir, "gem-#{name}.rb"
 
 begin
   open(filename, 'w') do |f|
