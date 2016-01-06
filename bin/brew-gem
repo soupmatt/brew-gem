@@ -40,14 +40,14 @@ require 'fileutils'
 
 class RubyGemsDownloadStrategy < AbstractDownloadStrategy
   def fetch
-    ohai "Fetching #{name} from gem source"
+    ohai "Fetching <%= name %> from gem source"
     HOMEBREW_CACHE.cd do
-      system "gem", "fetch", name, "--version", resource.version
+      system "gem", "fetch", "<%= name %>", "--version", resource.version
     end
   end
 
   def cached_location
-    Pathname.new("#{HOMEBREW_CACHE}/#{name}-#{resource.version}.gem")
+    Pathname.new("#{HOMEBREW_CACHE}/<%= name %>-#{resource.version}.gem")
   end
 
   def clear_cache
@@ -82,17 +82,17 @@ class <%= klass %> < Formula
     bin.rmtree if bin.exist?
     bin.mkpath
 
-    brew_gem_prefix = prefix+"gems/#{name}-#{version}"
+    brew_gem_prefix = prefix+"gems/<%= name %>-#{version}"
 
     completion_for_bash = Dir[
-                            "#{brew_gem_prefix}/completion{s,}/#{name}.{bash,sh}",
-                            "#{brew_gem_prefix}/**/#{name}_completion{s,}.{bash,sh}"
+                            "#{brew_gem_prefix}/completion{s,}/<%= name %>.{bash,sh}",
+                            "#{brew_gem_prefix}/**/<%= name %>_completion{s,}.{bash,sh}"
                           ].first
     bash_completion.install completion_for_bash if completion_for_bash
 
     completion_for_zsh = Dir[
-                           "#{brew_gem_prefix}/completions/#{name}.zsh",
-                           "#{brew_gem_prefix}/**/#{name}_completion{s,}.zsh"
+                           "#{brew_gem_prefix}/completions/<%= name %>.zsh",
+                           "#{brew_gem_prefix}/**/<%= name %>_completion{s,}.zsh"
                          ].first
     zsh_completion.install completion_for_zsh if completion_for_zsh
 
