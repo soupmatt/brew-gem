@@ -2,37 +2,6 @@
 
 BREW_GEM_HOME = File.expand_path('../..', __FILE__)
 
-if  !ARGV[0] || ARGV[0] == 'help'
-  abort "Please specify a gem name (e.g. brew gem command <name>)
-  install - Install a brew gem, accepts an optional version argument (e.g. brew gem install <name> <version>)
-  upgrade - Upgrade to the latest version of a brew gem
-  uninstall - Uninstall a brew gem"
-end
-
-command = ARGV[0]
-name = ARGV[1]
-gems = `gem list --remote "^#{name}$"`.lines
-unless gems.detect { |f| f =~ /^#{name} \(([^\s,]+).*\)/ }
-  abort "Could not find a valid gem '#{name}'"
-end
-version = ARGV[2] || $1
-
-klass = 'Gem' + name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { $1.upcase }.gsub('+', 'x')
-user_gemrc = "#{ENV['HOME']}/.gemrc"
-
-require 'erb'
-template_file = File.join(BREW_GEM_HOME, 'lib/brew/gem/template.rb.erb')
-template = ERB.new(File.read(template_file))
-
-require 'tempfile'
-filename = File.join Dir.tmpdir, "gem-#{name}.rb"
-
-begin
-  open(filename, 'w') do |f|
-    f.puts template.result(binding)
-  end
-
-  system "brew #{command} #{filename}"
-ensure
-  File.unlink filename
-end
+$LOAD_PATH.unshift(File.join(BREW_GEM_HOME, 'lib'))
+require 'brew/gem'
+Brew::Gem::CLI.run(ARGV)
