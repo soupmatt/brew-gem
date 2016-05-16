@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Brew::Gem, type: :aruba  do
+RSpec.describe Brew::Gem, type: :aruba  do
   subject(:aruba_cmd) { run_complete "#{brew_gem} #{command}" }
 
   let(:help_message) { Regexp.new Regexp.quote(Brew::Gem::CLI.help_msg.lines.first) }
