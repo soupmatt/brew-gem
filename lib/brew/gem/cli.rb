@@ -18,8 +18,12 @@ module Brew::Gem::CLI
   end
 
   def process_args(args)
-    if !args[0] || args[0] == 'help'
-      abort help_msg
+    abort help_msg unless args[0]
+    abort "unknown command: #{args[0]}\n#{help_msg}" unless COMMANDS.keys.include?(args[0])
+
+    if args[0] == 'help'
+      STDERR.puts help_msg
+      exit 0
     end
 
     command, name = args[0..1]
