@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+BREW_GEM_HOME = File.expand_path('../..', __FILE__)
+
 if  !ARGV[0] || ARGV[0] == 'help'
   abort "Please specify a gem name (e.g. brew gem command <name>)
   install - Install a brew gem, accepts an optional version argument (e.g. brew gem install <name> <version>)
@@ -19,7 +21,7 @@ klass = 'Gem' + name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { $1.upcase }.gsub(
 user_gemrc = "#{ENV['HOME']}/.gemrc"
 
 require 'erb'
-template_file = File.expand_path('../../lib/brew/gem/template.rb.erb', __FILE__)
+template_file = File.join(BREW_GEM_HOME, 'lib/brew/gem/template.rb.erb')
 template = ERB.new(File.read(template_file))
 
 require 'tempfile'
