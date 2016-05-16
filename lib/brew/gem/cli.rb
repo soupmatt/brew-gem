@@ -17,6 +17,17 @@ module Brew::Gem::CLI
       COMMANDS.map {|name, desc| "  #{name} - #{desc}"}).join("\n")
   end
 
+  def fetch_version(name, version = nil)
+    gems = `gem list --remote "^#{name}$"`.lines
+
+    unless gems.detect { |f| f =~ /^#{name} \(([^\s,]+).*\)/ }
+      abort "Could not find a valid gem '#{name}'"
+    end
+
+    version ||= $1
+    version
+  end
+
   def process_args(args)
     abort help_msg unless args[0]
     abort "unknown command: #{args[0]}\n#{help_msg}" unless COMMANDS.keys.include?(args[0])
@@ -26,17 +37,7 @@ module Brew::Gem::CLI
       exit 0
     end
 
-    command, name = args[0..1]
-
-    gems = `gem list --remote "^#{name}$"`.lines
-
-    unless gems.detect { |f| f =~ /^#{name} \(([^\s,]+).*\)/ }
-      abort "Could not find a valid gem '#{name}'"
-    end
-
-    version = args[2] || $1
-
-    [command, name, version]
+    args[0..2]
   end
 
   def expand_template(name, version)
@@ -60,7 +61,9 @@ module Brew::Gem::CLI
   end
 
   def run(args = ARGV)
-    command, name, version = process_args(args)
+    command, name, supplied_version = process_args(args)
+
+    version = fetch_version(name, supplied_version)
 
     with_temp_formula(name, version) do |filename|
       system "brew #{command} #{filename}"
