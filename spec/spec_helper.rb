@@ -8,3 +8,11 @@ else
   ::Dir.glob(::File.expand_path('../support/*.rb', __FILE__)).each { |f| require_relative f }
   ::Dir.glob(::File.expand_path('../support/**/*.rb', __FILE__)).each { |f| require_relative f }
 end
+
+RSpec.configure do |c|
+  c.filter_run focus: true
+  c.run_all_when_everything_filtered = true
+  unless system('which brew > /dev/null')
+    c.filter_run_excluding integration: true
+  end
+end
