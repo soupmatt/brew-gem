@@ -61,9 +61,10 @@ class <%= klass %> < Formula
                          ].first
     zsh_completion.install completion_for_zsh if completion_for_zsh
 
-    bindir = Gem::Specification::load("#{prefix}/specifications/<%= name %>-#{version}.gemspec").bindir
+    gemspec = Gem::Specification::load("#{prefix}/specifications/<%= name %>-#{version}.gemspec")
     ruby_libs = Dir.glob("#{prefix}/gems/*/lib")
-    Pathname.glob("#{brew_gem_prefix}/#{bindir}/*").each do |file|
+    gemspec.executables.each do |exe|
+      file = Pathname.new("#{brew_gem_prefix}/#{gemspec.bindir}/#{exe}")
       (bin+file.basename).open('w') do |f|
         f << <<-RUBY
 #!/usr/bin/ruby
