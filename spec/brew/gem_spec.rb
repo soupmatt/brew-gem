@@ -9,10 +9,9 @@ RSpec.describe Brew::Gem, type: :aruba  do
     it "doesn't contain any Bundler or RVM stuff" do
       cmd = run_complete "env"
       output = cmd.output
-      expect(output).to_not match("^BUNDLE_")
-      expect(output).to_not match("^GEM_")
-      expect(output).to_not match("^RUBYOPT")
-      expect(output).to_not match("^RUBYLIB")
+      expect(output).to_not match(/^BUNDLE_/)
+      expect(output).to_not match(/^GEM_/)
+      expect(output).to_not match(/^RUBY(OPT|LIB)/)
     end
   end
 
