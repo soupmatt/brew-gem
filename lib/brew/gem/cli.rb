@@ -40,10 +40,10 @@ module Brew::Gem::CLI
     args[0..2]
   end
 
-  def expand_template(name, version)
+  def expand_formula(name, version)
     klass         = 'Gem' + name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { $1.upcase }.gsub('+', 'x')
     user_gemrc    = "#{ENV['HOME']}/.gemrc"
-    template_file = File.expand_path('../template.rb.erb', __FILE__)
+    template_file = File.expand_path('../formula.rb.erb', __FILE__)
     template      = ERB.new(File.read(template_file))
     template.result(binding)
   end
@@ -52,7 +52,7 @@ module Brew::Gem::CLI
     filename = File.join Dir.tmpdir, "gem-#{name}.rb"
 
     open(filename, 'w') do |f|
-      f.puts expand_template(name, version)
+      f.puts expand_formula(name, version)
     end
 
     yield filename
