@@ -1,0 +1,77 @@
+# -*- ruby -*-
+
+require 'formula'
+require 'fileutils'
+
+class RubyGemsDownloadStrategy < AbstractDownloadStrategy
+  def fetch
+    ohai "Fetching <%= name %> from gem source"
+    HOMEBREW_CACHE.cd do
+      system "gem", "fetch", "<%= name %>", "--version", resource.version
+    end
+  end
+
+  def cached_location
+    Pathname.new("#{HOMEBREW_CACHE}/<%= name %>-#{resource.version}.gem")
+  end
+
+  def clear_cache
+    cached_location.unlink if cached_location.exist?
+  end
+end
+
+class <%= klass %> < Formula
+  url "<%= name %>", :using => RubyGemsDownloadStrategy
+  version "<%= version %>"
+
+  def install
+    # Copy user's RubyGems config to temporary build home.
+    buildpath_gemrc = "#{ENV['HOME']}/.gemrc"
+    if File.exists?('<%= user_gemrc %>') && !File.exists?(buildpath_gemrc)
+      FileUtils.cp('<%= user_gemrc %>', buildpath_gemrc)
+    end
+
+    # set GEM_HOME and GEM_PATH to make sure we package all the dependent gems
+    # together without accidently picking up other gems on the gem path since
+    # they might not be there if, say, we change to a different rvm gemset
+    ENV['GEM_HOME']="#{prefix}"
+    ENV['GEM_PATH']="#{prefix}"
+    system "gem", "install", cached_download,
+             "--no-ri",
+             "--no-rdoc",
+             "--no-wrapper",
+             "--no-user-install",
+             "--install-dir", prefix,
+             "--bindir", bin
+
+    bin.rmtree if bin.exist?
+    bin.mkpath
+
+    brew_gem_prefix = prefix+"gems/<%= name %>-#{version}"
+
+    completion_for_bash = Dir[
+                            "#{brew_gem_prefix}/completion{s,}/<%= name %>.{bash,sh}",
+                            "#{brew_gem_prefix}/**/<%= name %>_completion{s,}.{bash,sh}"
+                          ].first
+    bash_completion.install completion_for_bash if completion_for_bash
+
+    completion_for_zsh = Dir[
+                           "#{brew_gem_prefix}/completions/<%= name %>.zsh",
+                           "#{brew_gem_prefix}/**/<%= name %>_completion{s,}.zsh"
+                         ].first
+    zsh_completion.install completion_for_zsh if completion_for_zsh
+
+    ruby_libs = Dir.glob("#{prefix}/gems/*/lib")
+    Pathname.glob("#{brew_gem_prefix}/bin/*").each do |file|
+      (bin+file.basename).open('w') do |f|
+        f << <<-RUBY
+#!/usr/bin/ruby
+ENV['GEM_HOME']="#{prefix}"
+ENV['GEM_PATH']="#{prefix}"
+$:.unshift(#{ruby_libs.map(&:inspect).join(",")})
+load "#{file}"
+        RUBY
+      end
+    end
+  end
+end
