@@ -33,6 +33,17 @@ sudo /usr/bin/gem update --system
 Install
 -------
 
+There are two ways to install `brew-gem`, via Homebrew or via Rubygems. Usually
+the Rubygems release will track ahead of the Homebrew recipe, so to receive the
+latest features, use the Rubygems install instructions.
+
+Via Rubygems:
+
+    gem install brew-gem
+    brew-gem install brew-gem
+
+Via Homebrew:
+
     brew install brew-gem
 
 
