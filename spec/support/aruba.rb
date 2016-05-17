@@ -8,7 +8,16 @@ end
 
 module CleanEnv
   def run(*args)
-    Bundler.with_clean_env { super }
+    clean_env = Bundler.clean_env
+    (ENV.keys - clean_env.keys).each {|k| delete_environment_variable k }
+    # Also delete any RVM crud
+    delete_environment_variable "RUBYOPT"
+    delete_environment_variable "RUBYLIB"
+    delete_environment_variable "GEM_PATH"
+    delete_environment_variable "GEM_HOME"
+    path = ENV['PATH'].split(/:/)
+    set_environment_variable "PATH", path.reject {|x| x =~ %r{/.rvm/} }.join(":")
+    super
   end
 end
 
