@@ -41,22 +41,26 @@ RSpec.describe Brew::Gem, type: :aruba  do
     it { is_expected.to_not be_successfully_executed }
   end
 
-  context "install/uninstall" do #, announce_stderr: true, announce_stdout: true do
+  install_metadata = { integration: true }
+  install_metadata.update announce_stderr: true, announce_stdout: true if ENV['DEBUG']
+
+  context "install/uninstall", install_metadata do
     let(:install_cmd)   { run_complete "#{brew_gem} install chronic" }
-    let(:brew_cmd)      { run_complete "brew list gem-chronic" }
+    let(:brew_cmd)      { -> { run_complete "brew list gem-chronic" } }
     let(:uninstall_cmd) { run_complete "#{brew_gem} uninstall chronic" }
 
     after do |example|
       if example.exception
-        cmd = run "#{brew_gem} uninstall chronic"
+        cmd = run "brew uninstall gem-chronic"
         cmd.stop
       end
     end
 
     it "installs and uninstalls the gem" do
       expect(install_cmd).to   be_successfully_executed
-      expect(brew_cmd).to      be_successfully_executed
+      expect(brew_cmd.call).to be_successfully_executed
       expect(uninstall_cmd).to be_successfully_executed
+      expect(brew_cmd.call).to_not be_successfully_executed
     end
   end
 end
