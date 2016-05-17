@@ -9,6 +9,7 @@ module Brew::Gem::CLI
                     "            (e.g. brew gem install <name> [version])"),
     "upgrade"   => "Upgrade to the latest version of a brew gem",
     "uninstall" => "Uninstall a brew gem",
+    "info"      => "Show information for an installed gem",
     "help"      => "This message"
   }
 
