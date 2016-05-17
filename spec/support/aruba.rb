@@ -16,7 +16,8 @@ module CleanEnv
     delete_environment_variable "GEM_PATH"
     delete_environment_variable "GEM_HOME"
     path = ENV['PATH'].split(/:/)
-    set_environment_variable "PATH", path.reject {|x| x =~ %r{/.rvm/} }.join(":")
+    # Remove .rvm/.rbenv stuff from PATH
+    set_environment_variable "PATH", path.reject {|x| x =~ %r{/.(rvm|rbenv)/} }.join(":")
     super
   end
 end
