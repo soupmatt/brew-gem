@@ -1,7 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe Brew::Gem, type: :aruba  do
-  subject(:aruba_cmd) { run_complete "#{brew_gem} #{command}" }
+  def brew_gem(command); run_complete "#{brew_gem_exe} #{command}"; end
+  def brew(command); run_complete "brew #{command}"; end
+
+  subject(:aruba_cmd) { brew_gem command }
 
   let(:help_message) { Regexp.new Regexp.quote(Brew::Gem::CLI.help_msg.lines.first) }
 
@@ -45,22 +48,35 @@ RSpec.describe Brew::Gem, type: :aruba  do
   install_metadata.update announce_stderr: true, announce_stdout: true if ENV['DEBUG']
 
   context "install/uninstall", install_metadata do
-    let(:install_cmd)   { run_complete "#{brew_gem} install chronic" }
-    let(:brew_cmd)      { -> { run_complete "brew list gem-chronic" } }
-    let(:uninstall_cmd) { run_complete "#{brew_gem} uninstall chronic" }
+    def bundler_linked?; File.exists?("#{`brew --prefix`.chomp}/bin/bundle"); end
 
-    after do |example|
-      if example.exception
-        cmd = run "brew uninstall gem-chronic"
-        cmd.stop
+    before :all do
+      if bundler_linked?
+        @bundler_pre_linked = true
+        raise "bundler already linked in homebrew; either unlink or re-run rspec with '--tag ~integration'"
+      end
+      expect(brew_gem("install bundler")).to be_successfully_executed
+    end
+
+    after :all do |example|
+      unless @bundler_pre_linked
+        expect(brew_gem("uninstall bundler")).to be_successfully_executed
+        expect(brew("list gem-bundler")).to_not  be_successfully_executed
       end
     end
 
-    it "installs and uninstalls the gem" do
-      expect(install_cmd).to   be_successfully_executed
-      expect(brew_cmd.call).to be_successfully_executed
-      expect(uninstall_cmd).to be_successfully_executed
-      expect(brew_cmd.call).to_not be_successfully_executed
+    after do |example|
+      if example.exception && !@bundler_pre_linked
+        run("brew uninstall gem-bundler").stop
+      end
+    end
+
+    it "installs the gem" do
+      expect(brew("list gem-bundler")).to be_successfully_executed
+    end
+
+    it "links executables" do
+      expect(bundler_linked?).to be_truthy
     end
   end
 end
