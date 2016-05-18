@@ -37,6 +37,10 @@ There are two ways to install `brew-gem`, via Homebrew or via Rubygems. Usually
 the Rubygems release will track ahead of the Homebrew recipe, so to receive the
 latest features, use the Rubygems install instructions.
 
+*Warning*: If you previously installed `brew-gem` with Homebrew, the Rubygems
+install method will fail. Run `brew unlink brew-gem` or `brew uninstall
+brew-gem` first.
+
 Via Rubygems:
 
     gem install brew-gem
