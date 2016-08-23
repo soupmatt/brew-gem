@@ -59,11 +59,19 @@ Usage
 To install a specific version:
 
     brew gem install heroku 3.8.3
-    
+
+To install using a brew installed ruby(/usr/local/bin/ruby):
+
+    brew gem install heroku --homebrew-ruby
+
+And with a specific version:
+
+    brew gem install heroku 3.8.3 --homebrew-ruby
+
 To upgrade:
 
     brew gem upgrade heroku
-    
+
 To uninstall:
 
     brew gem uninstall heroku
