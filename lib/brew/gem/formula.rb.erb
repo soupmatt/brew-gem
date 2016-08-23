@@ -36,7 +36,11 @@ class <%= klass %> < Formula
     # they might not be there if, say, we change to a different rvm gemset
     ENV['GEM_HOME']="#{prefix}"
     ENV['GEM_PATH']="#{prefix}"
-    system "gem", "install", cached_download,
+
+    rubybindir = '<%= use_homebrew_ruby ? "/usr/local/bin" : "/usr/bin" %>'
+    gem_path = "#{rubybindir}/gem"
+    ruby_path = "#{rubybindir}/ruby"
+    system gem_path, "install", cached_download,
              "--no-ri",
              "--no-rdoc",
              "--no-wrapper",
@@ -67,7 +71,7 @@ class <%= klass %> < Formula
       file = Pathname.new("#{brew_gem_prefix}/#{gemspec.bindir}/#{exe}")
       (bin+file.basename).open('w') do |f|
         f << <<-RUBY
-#!/usr/bin/ruby
+#!#{ruby_path}
 ENV['GEM_HOME']="#{prefix}"
 ENV['GEM_PATH']="#{prefix}"
 $:.unshift(#{ruby_libs.map(&:inspect).join(",")})
