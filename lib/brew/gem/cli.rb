@@ -68,6 +68,7 @@ module Brew::Gem::CLI
 
     with_temp_formula(name, version) do |filename|
       system "brew #{command} #{filename}"
+      exit $?.exitstatus unless $?.success?
     end
   end
 end

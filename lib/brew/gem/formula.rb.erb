@@ -44,6 +44,8 @@ class <%= klass %> < Formula
              "--install-dir", prefix,
              "--bindir", bin
 
+    raise "gem install '<%= name %>' failed with status #{$?.exitstatus}" unless $?.success?
+
     bin.rmtree if bin.exist?
     bin.mkpath
 
