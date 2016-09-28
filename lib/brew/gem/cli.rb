@@ -38,10 +38,10 @@ module Brew::Gem::CLI
       exit 0
     end
 
-    args[0..2]
+    args[0..3]
   end
 
-  def expand_formula(name, version)
+  def expand_formula(name, version, use_homebrew_ruby=false)
     klass         = 'Gem' + name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { $1.upcase }.gsub('+', 'x')
     user_gemrc    = "#{ENV['HOME']}/.gemrc"
     template_file = File.expand_path('../formula.rb.erb', __FILE__)
@@ -49,11 +49,11 @@ module Brew::Gem::CLI
     template.result(binding)
   end
 
-  def with_temp_formula(name, version)
+  def with_temp_formula(name, version, use_homebrew_ruby)
     filename = File.join Dir.tmpdir, "gem-#{name}.rb"
 
     open(filename, 'w') do |f|
-      f.puts expand_formula(name, version)
+      f.puts expand_formula(name, version, use_homebrew_ruby)
     end
 
     yield filename
@@ -62,11 +62,18 @@ module Brew::Gem::CLI
   end
 
   def run(args = ARGV)
-    command, name, supplied_version = process_args(args)
+    command, name, supplied_version, homebrew_ruby = process_args(args)
+    homebrew_ruby_flag = "--homebrew-ruby"
+    if supplied_version == homebrew_ruby_flag
+      supplied_version = nil
+      homebrew_ruby = homebrew_ruby_flag
+    end
+
+    use_homebrew_ruby = homebrew_ruby == homebrew_ruby_flag
 
     version = fetch_version(name, supplied_version)
 
-    with_temp_formula(name, version) do |filename|
+    with_temp_formula(name, version, use_homebrew_ruby) do |filename|
       system "brew #{command} #{filename}"
       exit $?.exitstatus unless $?.success?
     end
