@@ -16,6 +16,7 @@ RSpec.describe Brew::Gem::CLI do
     it { is_expected.to match("rubybindir = '/usr/bin'") }
 
     context "homebrew-ruby" do
+      before { stub_const 'HOMEBREW_PREFIX', '/usr/local' }
       subject(:formula) { described_class.expand_formula("foo-bar", "1.2.3", true) }
       it { is_expected.to match("rubybindir = '/usr/local/bin'") }
     end
