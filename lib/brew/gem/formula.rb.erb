@@ -37,7 +37,7 @@ class <%= klass %> < Formula
     ENV['GEM_HOME']="#{prefix}"
     ENV['GEM_PATH']="#{prefix}"
 
-    rubybindir = '<%= use_homebrew_ruby ? "#{HOMEBREW_PREFIX}/bin" : "/usr/bin" %>'
+    rubybindir = '<%= use_homebrew_ruby ? "#{homebrew_prefix}/bin" : "/usr/bin" %>'
     gem_path = "#{rubybindir}/gem"
     ruby_path = "#{rubybindir}/ruby"
     system gem_path, "install", cached_download,

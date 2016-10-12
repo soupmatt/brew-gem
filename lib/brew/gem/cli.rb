@@ -42,10 +42,11 @@ module Brew::Gem::CLI
   end
 
   def expand_formula(name, version, use_homebrew_ruby=false)
-    klass         = 'Gem' + name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { $1.upcase }.gsub('+', 'x')
-    user_gemrc    = "#{ENV['HOME']}/.gemrc"
-    template_file = File.expand_path('../formula.rb.erb', __FILE__)
-    template      = ERB.new(File.read(template_file))
+    klass           = 'Gem' + name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { $1.upcase }.gsub('+', 'x')
+    user_gemrc      = "#{ENV['HOME']}/.gemrc"
+    homebrew_prefix = ENV['HOMEBREW_PREFIX'] || `brew --prefix`.chomp
+    template_file   = File.expand_path('../formula.rb.erb', __FILE__)
+    template        = ERB.new(File.read(template_file))
     template.result(binding)
   end
 
