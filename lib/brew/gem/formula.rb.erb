@@ -57,13 +57,13 @@ class <%= klass %> < Formula
 
     completion_for_bash = Dir[
                             "#{brew_gem_prefix}/completion{s,}/<%= name %>.{bash,sh}",
-                            "#{brew_gem_prefix}/**/<%= name %>_completion{s,}.{bash,sh}"
+                            "#{brew_gem_prefix}/**/<%= name %>{_,-}completion{s,}.{bash,sh}"
                           ].first
     bash_completion.install completion_for_bash if completion_for_bash
 
     completion_for_zsh = Dir[
                            "#{brew_gem_prefix}/completions/<%= name %>.zsh",
-                           "#{brew_gem_prefix}/**/<%= name %>_completion{s,}.zsh"
+                           "#{brew_gem_prefix}/**/<%= name %>{_,-}completion{s,}.zsh"
                          ].first
     zsh_completion.install completion_for_zsh if completion_for_zsh
 
