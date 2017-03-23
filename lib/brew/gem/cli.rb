@@ -10,6 +10,7 @@ module Brew::Gem::CLI
     "upgrade"   => "Upgrade to the latest version of a brew gem",
     "uninstall" => "Uninstall a brew gem",
     "info"      => "Show information for an installed gem",
+    "formula"   => "Print out the generated formula for a gem",
     "help"      => "This message"
   }
 
@@ -75,8 +76,13 @@ module Brew::Gem::CLI
     version = fetch_version(name, supplied_version)
 
     with_temp_formula(name, version, use_homebrew_ruby) do |filename|
-      system "brew #{command} #{filename}"
-      exit $?.exitstatus unless $?.success?
+      case command
+      when "formula"
+        $stdout.puts File.read(filename)
+      else
+        system "brew #{command} #{filename}"
+        exit $?.exitstatus unless $?.success?
+      end
     end
   end
 end
