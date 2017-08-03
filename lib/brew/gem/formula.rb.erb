@@ -7,6 +7,7 @@ class RubyGemsDownloadStrategy < AbstractDownloadStrategy
   def fetch
     ohai "Fetching <%= name %> from gem source"
     HOMEBREW_CACHE.cd do
+      ENV['GEM_SPEC_CACHE'] = "#{HOMEBREW_CACHE}/gem_spec_cache"
       system "gem", "fetch", "<%= name %>", "--version", resource.version
     end
   end
