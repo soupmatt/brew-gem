@@ -1,5 +1,5 @@
 module Brew
   module Gem
-    VERSION = "2.2"
+    VERSION = "0.8.2"
   end
 end

@@ -1,5 +1,4 @@
 #### v0.8.2
-### v0.8.2
 
 * Fix sandbox permissions with gem spec cache
 
@@ -13,7 +12,7 @@
 
   > Nick Sieger: : https://github.com/sportngin/brew-gem/pull/34
 
-### v0.8.1
+#### v0.8.1
 
 * brew-gem exits non-zero if gem failed to build/install
 
