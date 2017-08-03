@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'fileutils'
 
 RSpec.describe Brew::Gem, type: :aruba  do
   def brew_gem(command); run_complete "#{brew_gem_exe} #{command}"; end
@@ -44,23 +45,28 @@ RSpec.describe Brew::Gem, type: :aruba  do
     it { is_expected.to_not be_successfully_executed }
   end
 
-  install_metadata = { integration: true }
+  install_metadata = { integration: true, exit_timeout: 30 }
   install_metadata.update announce_stderr: true, announce_stdout: true if ENV['DEBUG']
 
   context "install/uninstall", install_metadata do
-    def bundler_linked?; File.exists?("#{`brew --prefix`.chomp}/bin/bundle"); end
+    def bundler_linked?; File.exists?("#{brew('--prefix').output.chomp}/bin/bundle"); end
 
-    before :all do
+    fixture = :all
+    fixture = :each if ENV['DEBUG'] # So that Aruba announces all the before/after commands as well
+
+    before fixture do
+      # Ensure we download bundler fresh
+      FileUtils.rm_f Dir["#{brew('--cache').output.chomp}/bundler*.gem"]
       if bundler_linked?
         @bundler_pre_linked = true
         raise "bundler already linked in homebrew; either unlink or re-run rspec with '--tag ~integration'"
       end
-      expect(brew_gem("install bundler")).to be_successfully_executed
+      expect(brew("gem install bundler")).to be_successfully_executed
     end
 
-    after :all do |example|
+    after fixture do |example|
       unless @bundler_pre_linked
-        expect(brew_gem("uninstall bundler")).to be_successfully_executed
+        expect(brew("gem uninstall bundler")).to be_successfully_executed
         expect(brew("list gem-bundler")).to_not  be_successfully_executed
       end
     end

@@ -7,6 +7,9 @@ module BrewGemBin
 end
 
 module CleanEnv
+  OUR_BREW_GEM_HOME = File.expand_path('../../..', __FILE__)
+  OUR_BREW_GEM_BIN  = "#{OUR_BREW_GEM_HOME}/bin"
+
   def run(*args)
     clean_env = Bundler.clean_env
     (ENV.keys - clean_env.keys).each {|k| delete_environment_variable k }
@@ -16,8 +19,11 @@ module CleanEnv
     delete_environment_variable "GEM_PATH"
     delete_environment_variable "GEM_HOME"
     path = ENV['PATH'].split(/:/)
-    # Remove .rvm/.rbenv stuff from PATH
-    set_environment_variable "PATH", path.reject {|x| x =~ %r{/.(rvm|rbenv)/} }.join(":")
+    # Remove .rvm/.rbenv/.bundle stuff from PATH
+    path = path.reject {|x| x =~ %r{/.(rvm|rbenv)/} || x =~ %r{#{OUR_BREW_GEM_HOME}/.bundle} }
+    # Ensure that `brew` finds our local `brew-gem` command by putting it first in the path
+    path.unshift OUR_BREW_GEM_BIN unless path.first == OUR_BREW_GEM_BIN
+    set_environment_variable "PATH", path.join(":")
     super
   end
 end
