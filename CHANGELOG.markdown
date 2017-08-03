@@ -1,5 +1,13 @@
 ### v0.8.2
 
+* Fix sandbox permissions with gem spec cache
+
+  > Nick Sieger: Unknown User: https://github.com/sportngin/brew-gem/pull/48
+
+* Add `brew gem formula` command for debugging
+
+  > Nick Sieger: Unknown User: https://github.com/sportngin/brew-gem/pull/46
+
 * Use homebrew prefix instead of /usr/local
 
   > Nick Sieger: : https://github.com/sportngin/brew-gem/pull/34
