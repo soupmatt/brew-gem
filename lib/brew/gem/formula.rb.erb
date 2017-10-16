@@ -77,6 +77,7 @@ class <%= klass %> < Formula
 #!#{ruby_path} --disable-gems
 ENV['GEM_HOME']="#{prefix}"
 ENV['GEM_PATH']="#{prefix}"
+require 'rubygems'
 $:.unshift(#{ruby_libs.map(&:inspect).join(",")})
 load "#{file}"
         RUBY
