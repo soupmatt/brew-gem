@@ -1,4 +1,9 @@
 #### v0.8.3
+
+* Add --disable-gems to generated binstubs
+
+  > Nick Sieger: https://github.com/sportngin/brew-gem/pull/49
+
 #### v0.8.2
 
 * Fix sandbox permissions with gem spec cache
