@@ -1,3 +1,4 @@
+#### v0.8.3
 #### v0.8.2
 
 * Fix sandbox permissions with gem spec cache
