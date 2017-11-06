@@ -3,12 +3,16 @@
 require 'formula'
 require 'fileutils'
 
+BREWGEM_RUBYBINDIR = '<%= use_homebrew_ruby ? "#{homebrew_prefix}/bin" : "/usr/bin" %>'
+BREWGEM_GEM_PATH = "#{BREWGEM_RUBYBINDIR}/gem"
+BREWGEM_RUBY_PATH = "#{BREWGEM_RUBYBINDIR}/ruby"
+
 class RubyGemsDownloadStrategy < AbstractDownloadStrategy
   def fetch
     ohai "Fetching <%= name %> from gem source"
     HOMEBREW_CACHE.cd do
       ENV['GEM_SPEC_CACHE'] = "#{HOMEBREW_CACHE}/gem_spec_cache"
-      system "gem", "fetch", "<%= name %>", "--version", resource.version
+      system BREWGEM_GEM_PATH, "fetch", "<%= name %>", "--version", resource.version
     end
   end
 
@@ -38,10 +42,7 @@ class <%= klass %> < Formula
     ENV['GEM_HOME']="#{prefix}"
     ENV['GEM_PATH']="#{prefix}"
 
-    rubybindir = '<%= use_homebrew_ruby ? "#{homebrew_prefix}/bin" : "/usr/bin" %>'
-    gem_path = "#{rubybindir}/gem"
-    ruby_path = "#{rubybindir}/ruby"
-    system gem_path, "install", cached_download,
+    system BREWGEM_GEM_PATH, "install", cached_download,
              "--no-ri",
              "--no-rdoc",
              "--no-wrapper",
@@ -74,7 +75,7 @@ class <%= klass %> < Formula
       file = Pathname.new("#{brew_gem_prefix}/#{gemspec.bindir}/#{exe}")
       (bin+file.basename).open('w') do |f|
         f << <<-RUBY
-#!#{ruby_path} --disable-gems
+#!#{BREWGEM_RUBY_PATH} --disable-gems
 ENV['GEM_HOME']="#{prefix}"
 ENV['GEM_PATH']="#{prefix}"
 require 'rubygems'
