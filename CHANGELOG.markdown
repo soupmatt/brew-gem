@@ -1,3 +1,7 @@
+* Fix gem exe used by RubyGemsDownloadStrategy
+
+  > Nick Sieger: Andy Fleener, Unknown User: https://github.com/sportngin/brew-gem/pull/51
+
 #### v0.8.3
 
 * Add --disable-gems to generated binstubs
