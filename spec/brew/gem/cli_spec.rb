@@ -43,6 +43,28 @@ RSpec.describe Brew::Gem::CLI do
       expect(command.split).to eql(['brew', 'install', formula])
     end
 
+    context 'with a homebrew ruby installed' do
+      before do
+        allow(File).to receive(:exist?).with('/usr/local/opt/ruby').and_return true
+      end
+
+      it 'installs with homebrew ruby by default' do
+        cli.run ['install', gem]
+        expect(cli).to have_received(:with_temp_formula).with(gem, version, true)
+      end
+    end
+
+    context 'with a homebrew ruby not installed' do
+      before do
+        allow(File).to receive(:exist?).with('/usr/local/opt/ruby').and_return false
+      end
+
+      it 'installs with system ruby by default' do
+        cli.run ['install', gem]
+        expect(cli).to have_received(:with_temp_formula).with(gem, version, false)
+      end
+    end
+
     it 'accepts an optional requested version' do
       cli.run ['install', gem, '2.2.2']
       expect(command.split).to eql(['brew', 'install', formula])

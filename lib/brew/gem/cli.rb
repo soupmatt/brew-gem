@@ -46,10 +46,13 @@ module Brew::Gem::CLI
     args[0..3]
   end
 
+  def homebrew_prefix
+    ENV['HOMEBREW_PREFIX'] || `brew --prefix`.chomp
+  end
+
   def expand_formula(name, version, use_homebrew_ruby=false)
     klass           = 'Gem' + name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { $1.upcase }.gsub('+', 'x')
     user_gemrc      = "#{ENV['HOME']}/.gemrc"
-    homebrew_prefix = ENV['HOMEBREW_PREFIX'] || `brew --prefix`.chomp
     template_file   = File.expand_path('../formula.rb.erb', __FILE__)
     template        = ERB.new(File.read(template_file))
     template.result(binding)
@@ -67,6 +70,10 @@ module Brew::Gem::CLI
     File.unlink filename
   end
 
+  def homebrew_ruby?(ruby_flag)
+    File.exist?("#{homebrew_prefix}/opt/ruby") &&
+      ruby_flag.nil? || ruby_flag == HOMEBREW_RUBY_FLAG
+  end
 
   def run(args = ARGV)
     command, name, supplied_version, ruby_flag = process_args(args)
@@ -75,7 +82,7 @@ module Brew::Gem::CLI
       supplied_version, ruby_flag = ruby_flag, supplied_version
     end
 
-    use_homebrew_ruby = ruby_flag.nil? || ruby_flag == HOMEBREW_RUBY_FLAG
+    use_homebrew_ruby = homebrew_ruby?(ruby_flag)
 
     version = fetch_version(name, supplied_version)
 
