@@ -42,6 +42,12 @@ class <%= klass %> < Formula
     ENV['GEM_HOME']="#{prefix}"
     ENV['GEM_PATH']="#{prefix}"
 
+    # Use /usr/local/bin at the front of the path instead of Homebrew shims,
+    # which mess with Ruby's own compiler config when building native extensions
+    if defined?(HOMEBREW_SHIMS_PATH)
+      ENV['PATH'] = ENV['PATH'].sub(HOMEBREW_SHIMS_PATH.to_s, '/usr/local/bin')
+    end
+
     system BREWGEM_GEM_PATH, "install", cached_download,
              "--no-ri",
              "--no-rdoc",
