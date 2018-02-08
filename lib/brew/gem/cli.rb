@@ -1,5 +1,6 @@
 require 'erb'
 require 'tempfile'
+require 'shellwords'
 
 module Brew::Gem::CLI
   module_function
@@ -112,7 +113,7 @@ module Brew::Gem::CLI
       when "formula"
         $stdout.puts File.read(filename)
       else
-        system "brew #{arguments.to_args.join(' ')} #{filename}"
+        system "brew #{arguments.to_args.shelljoin} #{filename}"
         exit $?.exitstatus unless $?.success?
       end
     end
