@@ -14,6 +14,10 @@ module Brew::Gem::CLI
     "help"      => "This message"
   }
 
+  HOMEBREW_RUBY_FLAG = "--homebrew-ruby"
+  SYSTEM_RUBY_FLAG   = "--system-ruby"
+  FLAGS = [HOMEBREW_RUBY_FLAG, SYSTEM_RUBY_FLAG]
+
   def help_msg
     (["Please specify a gem name (e.g. brew gem command <name>)"] +
       COMMANDS.map {|name, desc| "  #{name} - #{desc}"}).join("\n")
@@ -63,15 +67,15 @@ module Brew::Gem::CLI
     File.unlink filename
   end
 
+
   def run(args = ARGV)
-    command, name, supplied_version, homebrew_ruby = process_args(args)
-    homebrew_ruby_flag = "--homebrew-ruby"
-    if supplied_version == homebrew_ruby_flag
-      supplied_version = nil
-      homebrew_ruby = homebrew_ruby_flag
+    command, name, supplied_version, ruby_flag = process_args(args)
+
+    if FLAGS.include?(supplied_version)
+      supplied_version, ruby_flag = ruby_flag, supplied_version
     end
 
-    use_homebrew_ruby = homebrew_ruby == homebrew_ruby_flag
+    use_homebrew_ruby = ruby_flag.nil? || ruby_flag == HOMEBREW_RUBY_FLAG
 
     version = fetch_version(name, supplied_version)
 
