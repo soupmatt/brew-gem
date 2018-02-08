@@ -29,6 +29,7 @@ RSpec.describe Brew::Gem::CLI do
     let(:version) { '1.0.1.0' }
     let(:formula) { 'temp-formula.rb' }
     let(:command) { '' }
+    let(:opt_ruby_exists) { true }
 
     before do
       allow(cli).to receive(:exit)
@@ -36,6 +37,7 @@ RSpec.describe Brew::Gem::CLI do
       allow(cli).to receive(:with_temp_formula).and_yield(formula)
       allow(cli).to receive(:fetch_version) {|n,v| v || version }
       allow(cli).to receive(:abort) {|msg| raise msg }
+      allow(File).to receive(:exist?).with('/usr/local/opt/ruby').and_return opt_ruby_exists
     end
 
     it 'runs brew on a formula file' do
@@ -44,10 +46,6 @@ RSpec.describe Brew::Gem::CLI do
     end
 
     context 'with a homebrew ruby installed' do
-      before do
-        allow(File).to receive(:exist?).with('/usr/local/opt/ruby').and_return true
-      end
-
       it 'installs with homebrew ruby by default' do
         cli.run ['install', gem]
         expect(cli).to have_received(:with_temp_formula).with(gem, version, true)
@@ -55,9 +53,7 @@ RSpec.describe Brew::Gem::CLI do
     end
 
     context 'with a homebrew ruby not installed' do
-      before do
-        allow(File).to receive(:exist?).with('/usr/local/opt/ruby').and_return false
-      end
+      let(:opt_ruby_exists) { false }
 
       it 'installs with system ruby by default' do
         cli.run ['install', gem]
@@ -77,11 +73,22 @@ RSpec.describe Brew::Gem::CLI do
       expect(cli).to have_received(:with_temp_formula).with(gem, version, true)
     end
 
+    it 'accepts a --homebrew-ruby flag anywhere' do
+      cli.run ['install', '--homebrew-ruby', gem]
+      expect(command.split).to eql(['brew', 'install', formula])
+      expect(cli).to have_received(:with_temp_formula).with(gem, version, true)
+    end
+
     it 'accepts a --system-ruby flag' do
       cli.run ['install', gem, '--system-ruby']
       expect(command.split).to eql(['brew', 'install', formula])
       expect(cli).to have_received(:with_temp_formula).with(gem, version, false)
     end
 
+    it 'accepts other flags and keeps the order' do
+      cli.run ['-v', 'uninstall', '--force', gem, '2.1.2']
+      expect(command.split).to eql(['brew', '-v', 'uninstall', '--force', formula])
+      expect(cli).to have_received(:with_temp_formula).with(gem, '2.1.2', true)
+    end
   end
 end
