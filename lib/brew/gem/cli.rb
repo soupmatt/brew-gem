@@ -1,5 +1,6 @@
 require 'erb'
 require 'tempfile'
+require 'shellwords'
 
 module Brew::Gem::CLI
   module_function
@@ -13,6 +14,36 @@ module Brew::Gem::CLI
     "formula"   => "Print out the generated formula for a gem",
     "help"      => "This message"
   }
+
+  HOMEBREW_RUBY_FLAG = "--homebrew-ruby"
+  SYSTEM_RUBY_FLAG   = "--system-ruby"
+  RUBY_FLAGS = [HOMEBREW_RUBY_FLAG, SYSTEM_RUBY_FLAG]
+
+  class Arguments
+    attr_reader :ruby_flag
+
+    def initialize(args)
+      @ruby_flag          = args.select {|a| RUBY_FLAGS.include?(a) }.last
+      @args               = args.reject {|a| RUBY_FLAGS.include?(a) }
+      @args_without_flags = @args.reject {|a| a.start_with?('-') }
+    end
+
+    def command
+      @args_without_flags[0]
+    end
+
+    def gem
+      @args_without_flags[1]
+    end
+
+    def supplied_version
+      @args_without_flags[2]
+    end
+
+    def to_args
+      @args.reject {|a| a == gem || a == supplied_version }
+    end
+  end
 
   def help_msg
     (["Please specify a gem name (e.g. brew gem command <name>)"] +
@@ -31,21 +62,26 @@ module Brew::Gem::CLI
   end
 
   def process_args(args)
-    abort help_msg unless args[0]
-    abort "unknown command: #{args[0]}\n#{help_msg}" unless COMMANDS.keys.include?(args[0])
+    arguments = Arguments.new(args)
+    command   = arguments.command
+    abort help_msg unless command
+    abort "unknown command: #{command}\n#{help_msg}" unless COMMANDS.keys.include?(command)
 
-    if args[0] == 'help'
+    if command == 'help'
       STDERR.puts help_msg
       exit 0
     end
 
-    args[0..3]
+    arguments
+  end
+
+  def homebrew_prefix
+    ENV['HOMEBREW_PREFIX'] || `brew --prefix`.chomp
   end
 
   def expand_formula(name, version, use_homebrew_ruby=false)
     klass           = 'Gem' + name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { $1.upcase }.gsub('+', 'x')
     user_gemrc      = "#{ENV['HOME']}/.gemrc"
-    homebrew_prefix = ENV['HOMEBREW_PREFIX'] || `brew --prefix`.chomp
     template_file   = File.expand_path('../formula.rb.erb', __FILE__)
     template        = ERB.new(File.read(template_file))
     template.result(binding)
@@ -63,24 +99,21 @@ module Brew::Gem::CLI
     File.unlink filename
   end
 
+  def homebrew_ruby?(ruby_flag)
+    File.exist?("#{homebrew_prefix}/opt/ruby") &&
+      ruby_flag.nil? || ruby_flag == HOMEBREW_RUBY_FLAG
+  end
+
   def run(args = ARGV)
-    command, name, supplied_version, homebrew_ruby = process_args(args)
-    homebrew_ruby_flag = "--homebrew-ruby"
-    if supplied_version == homebrew_ruby_flag
-      supplied_version = nil
-      homebrew_ruby = homebrew_ruby_flag
-    end
-
-    use_homebrew_ruby = homebrew_ruby == homebrew_ruby_flag
-
-    version = fetch_version(name, supplied_version)
-
-    with_temp_formula(name, version, use_homebrew_ruby) do |filename|
-      case command
+    arguments = process_args(args)
+    name      = arguments.gem
+    version   = fetch_version(name, arguments.supplied_version)
+    with_temp_formula(name, version, homebrew_ruby?(arguments.ruby_flag)) do |filename|
+      case arguments.command
       when "formula"
         $stdout.puts File.read(filename)
       else
-        system "brew #{command} #{filename}"
+        system "brew #{arguments.to_args.shelljoin} #{filename}"
         exit $?.exitstatus unless $?.success?
       end
     end
