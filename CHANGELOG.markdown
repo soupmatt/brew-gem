@@ -1,3 +1,9 @@
+#### v0.8.4
+
+* Install with homebrew ruby by default, if present
+
+  > Nick Sieger: Emma Sax, Andy Fleener, Unknown User: https://github.com/sportngin/brew-gem/pull/53
+
 * Fix gem exe used by RubyGemsDownloadStrategy
 
   > Nick Sieger: Andy Fleener, Unknown User: https://github.com/sportngin/brew-gem/pull/51
