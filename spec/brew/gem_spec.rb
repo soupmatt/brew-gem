@@ -49,40 +49,40 @@ RSpec.describe Brew::Gem, type: :aruba  do
   install_metadata.update announce_stderr: true, announce_stdout: true if ENV['DEBUG']
 
   context "install/uninstall", install_metadata do
-    def bundler_linked?; File.exists?("#{brew('--prefix').output.chomp}/bin/bundle"); end
+    def gli_linked?; File.exists?("#{brew('--prefix').output.chomp}/bin/gli"); end
 
     fixture = :all
     fixture = :each if ENV['DEBUG'] # So that Aruba announces all the before/after commands as well
 
     before fixture do
-      # Ensure we download bundler fresh
-      FileUtils.rm_f Dir["#{brew('--cache').output.chomp}/bundler*.gem"]
-      if bundler_linked?
-        @bundler_pre_linked = true
-        raise "bundler already linked in homebrew; either unlink or re-run rspec with '--tag ~integration'"
+      # Ensure we download gli fresh
+      FileUtils.rm_f Dir["#{brew('--cache').output.chomp}/gli*.gem"]
+      if gli_linked?
+        @gli_pre_linked = true
+        raise "gli already linked in homebrew; either unlink or re-run rspec with '--tag ~integration'"
       end
-      expect(brew("gem install bundler")).to be_successfully_executed
+      expect(brew("gem install gli")).to be_successfully_executed
     end
 
     after fixture do |example|
-      unless @bundler_pre_linked
-        expect(brew("gem uninstall bundler")).to be_successfully_executed
-        expect(brew("list gem-bundler")).to_not  be_successfully_executed
+      unless @gli_pre_linked
+        expect(brew("gem uninstall gli")).to be_successfully_executed
+        expect(brew("list gem-gli")).to_not  be_successfully_executed
       end
     end
 
     after do |example|
-      if example.exception && !@bundler_pre_linked
-        run("brew uninstall gem-bundler").stop
+      if example.exception && !@gli_pre_linked
+        run("brew uninstall gem-gli").stop
       end
     end
 
     it "installs the gem" do
-      expect(brew("list gem-bundler")).to be_successfully_executed
+      expect(brew("list gem-gli")).to be_successfully_executed
     end
 
     it "links executables" do
-      expect(bundler_linked?).to be_truthy
+      expect(gli_linked?).to be_truthy
     end
   end
 end
