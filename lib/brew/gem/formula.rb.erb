@@ -10,14 +10,25 @@ BREWGEM_RUBY_PATH = "#{BREWGEM_RUBYBINDIR}/ruby"
 class RubyGemsDownloadStrategy < AbstractDownloadStrategy
   def fetch
     ohai "Fetching <%= name %> from gem source"
-    HOMEBREW_CACHE.cd do
-      ENV['GEM_SPEC_CACHE'] = "#{HOMEBREW_CACHE}/gem_spec_cache"
-      system BREWGEM_GEM_PATH, "fetch", "<%= name %>", "--version", resource.version
+    cache.cd do
+      ENV['GEM_SPEC_CACHE'] = "#{cache}/gem_spec_cache"
+      system BREWGEM_GEM_PATH, "fetch", "<%= name %>", "--version", gem_version
     end
   end
 
   def cached_location
-    Pathname.new("#{HOMEBREW_CACHE}/<%= name %>-#{resource.version}.gem")
+    Pathname.new("#{cache}/<%= name %>-#{gem_version}.gem")
+  end
+
+  def cache
+    @cache ||= HOMEBREW_CACHE
+  end
+
+  def gem_version
+    return @version if defined?(@version) && @version
+    @version = @resource.version if defined?(@resource)
+    raise "Unable to determine version; did Homebrew change?" unless @version
+    @version
   end
 
   def clear_cache
