@@ -1,3 +1,8 @@
+#### v0.9.0
+* Fix compatibility with latest homebrew
+
+  > Nick Sieger: : https://github.com/sportngin/brew-gem/pull/54
+
 #### v0.8.4
 
 * Install with homebrew ruby by default, if present
