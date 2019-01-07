@@ -60,8 +60,7 @@ class <%= klass %> < Formula
     end
 
     system BREWGEM_GEM_PATH, "install", cached_download,
-             "--no-ri",
-             "--no-rdoc",
+             "--no-document",
              "--no-wrapper",
              "--no-user-install",
              "--install-dir", prefix,
