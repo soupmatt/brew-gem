@@ -16,11 +16,11 @@ RSpec.describe Brew::Gem::CLI do
     it { is_expected.to match(/class GemFooBar < Formula/) }
 
     it { is_expected.to match(/version "1\.2\.3"/) }
-    it { is_expected.to match("BREWGEM_RUBYBINDIR = '/usr/bin'") }
+    it { is_expected.to match("USE_HOMEBREW_RUBY = false") }
 
     context "homebrew-ruby" do
       subject(:formula) { cli.expand_formula("foo-bar", "1.2.3", true) }
-      it { is_expected.to match("BREWGEM_RUBYBINDIR = '/usr/local/bin'") }
+      it { is_expected.to match("USE_HOMEBREW_RUBY = true") }
     end
   end
 
