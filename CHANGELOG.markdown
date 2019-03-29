@@ -1,7 +1,18 @@
+#### v1.0.0
+
+* Fix homebrew ruby path (thanks Kaleb Lape)
+
+  > https://github.com/sportngin/brew-gem/pull/59  
+
+* Fix old ruby gem flags (thanks JuPlutonic)
+
+  > https://github.com/sportngin/brew-gem/pull/57/
+
 #### v0.9.0
+
 * Fix compatibility with latest homebrew
 
-  > Nick Sieger: : https://github.com/sportngin/brew-gem/pull/54
+  > Nick Sieger: https://github.com/sportngin/brew-gem/pull/54
 
 #### v0.8.4
 
