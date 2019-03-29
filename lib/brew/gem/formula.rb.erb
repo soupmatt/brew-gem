@@ -3,16 +3,22 @@
 require 'formula'
 require 'fileutils'
 
-BREWGEM_RUBYBINDIR = '<%= use_homebrew_ruby ? "#{homebrew_prefix}/bin" : "/usr/bin" %>'
-BREWGEM_GEM_PATH = "#{BREWGEM_RUBYBINDIR}/gem"
-BREWGEM_RUBY_PATH = "#{BREWGEM_RUBYBINDIR}/ruby"
+USE_HOMEBREW_RUBY = <%= use_homebrew_ruby ? "true" : "false" %>
+
+module RubyBin
+  def ruby_bin
+    USE_HOMEBREW_RUBY ? Formula["ruby"].opt_bin: "/usr/bin"
+  end
+end
 
 class RubyGemsDownloadStrategy < AbstractDownloadStrategy
+  include RubyBin
+
   def fetch
     ohai "Fetching <%= name %> from gem source"
     cache.cd do
       ENV['GEM_SPEC_CACHE'] = "#{cache}/gem_spec_cache"
-      system BREWGEM_GEM_PATH, "fetch", "<%= name %>", "--version", gem_version
+      system "#{ruby_bin}/gem", "fetch", "<%= name %>", "--version", gem_version
     end
   end
 
@@ -37,8 +43,11 @@ class RubyGemsDownloadStrategy < AbstractDownloadStrategy
 end
 
 class <%= klass %> < Formula
+  include RubyBin
+
   url "<%= name %>", :using => RubyGemsDownloadStrategy
   version "<%= version %>"
+  depends_on "ruby"
 
   def install
     # Copy user's RubyGems config to temporary build home.
@@ -59,7 +68,7 @@ class <%= klass %> < Formula
       ENV['PATH'] = ENV['PATH'].sub(HOMEBREW_SHIMS_PATH.to_s, '/usr/local/bin')
     end
 
-    system BREWGEM_GEM_PATH, "install", cached_download,
+    system "#{ruby_bin}/gem", "install", cached_download,
              "--no-document",
              "--no-wrapper",
              "--no-user-install",
@@ -91,7 +100,7 @@ class <%= klass %> < Formula
       file = Pathname.new("#{brew_gem_prefix}/#{gemspec.bindir}/#{exe}")
       (bin+file.basename).open('w') do |f|
         f << <<-RUBY
-#!#{BREWGEM_RUBY_PATH} --disable-gems
+#!#{ruby_bin}/ruby --disable-gems
 ENV['GEM_HOME']="#{prefix}"
 ENV['GEM_PATH']="#{prefix}"
 require 'rubygems'
