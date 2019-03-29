@@ -69,8 +69,7 @@ class <%= klass %> < Formula
     end
 
     system "#{ruby_bin}/gem", "install", cached_download,
-             "--no-ri",
-             "--no-rdoc",
+             "--no-document",
              "--no-wrapper",
              "--no-user-install",
              "--install-dir", prefix,
