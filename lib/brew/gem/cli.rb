@@ -40,8 +40,21 @@ module Brew::Gem::CLI
       @args_without_flags[2]
     end
 
-    def to_args
-      @args.reject {|a| a == gem || a == supplied_version }
+    def flags
+      @flags ||= @args.reject {|a| a == gem || a == supplied_version }
+    end
+
+    def to_gem_args
+      if start = flags.index('--')
+        flags[start..-1]
+      else
+        []
+      end
+    end
+
+    def to_brew_args
+      stop_index = (flags.index('--') || 0) - 1
+      flags[0..stop_index]
     end
   end
 
@@ -79,7 +92,7 @@ module Brew::Gem::CLI
     ENV['HOMEBREW_PREFIX'] || `brew --prefix`.chomp
   end
 
-  def expand_formula(name, version, use_homebrew_ruby=false)
+  def expand_formula(name, version, use_homebrew_ruby = false, gem_arguments = [])
     klass           = 'Gem' + name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { $1.upcase }.gsub('+', 'x')
     user_gemrc      = "#{ENV['HOME']}/.gemrc"
     template_file   = File.expand_path('../formula.rb.erb', __FILE__)
@@ -87,11 +100,11 @@ module Brew::Gem::CLI
     template.result(binding)
   end
 
-  def with_temp_formula(name, version, use_homebrew_ruby)
+  def with_temp_formula(name, version, use_homebrew_ruby, gem_arguments)
     filename = File.join Dir.tmpdir, "gem-#{name}.rb"
 
     open(filename, 'w') do |f|
-      f.puts expand_formula(name, version, use_homebrew_ruby)
+      f.puts expand_formula(name, version, use_homebrew_ruby, gem_arguments)
     end
 
     yield filename
@@ -108,12 +121,12 @@ module Brew::Gem::CLI
     arguments = process_args(args)
     name      = arguments.gem
     version   = fetch_version(name, arguments.supplied_version)
-    with_temp_formula(name, version, homebrew_ruby?(arguments.ruby_flag)) do |filename|
+    with_temp_formula(name, version, homebrew_ruby?(arguments.ruby_flag), arguments.to_gem_args) do |filename|
       case arguments.command
       when "formula"
         $stdout.puts File.read(filename)
       else
-        system "brew #{arguments.to_args.shelljoin} #{filename}"
+        system "brew #{arguments.to_brew_args.shelljoin} #{filename}"
         exit $?.exitstatus unless $?.success?
       end
     end
