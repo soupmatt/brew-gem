@@ -4,6 +4,7 @@ require 'formula'
 require 'fileutils'
 
 USE_HOMEBREW_RUBY = <%= use_homebrew_ruby ? "true" : "false" %>
+GEM_ARGUMENTS = <%= gem_arguments.inspect %>
 
 module RubyBin
   def ruby_bin
@@ -73,7 +74,7 @@ class <%= klass %> < Formula
              "--no-wrapper",
              "--no-user-install",
              "--install-dir", prefix,
-             "--bindir", bin
+             "--bindir", bin, *GEM_ARGUMENTS
 
     raise "gem install '<%= name %>' failed with status #{$?.exitstatus}" unless $?.success?
 
