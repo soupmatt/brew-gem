@@ -1,3 +1,9 @@
+#### v1.1.1
+
+* Update fetch signature
+
+  > https://github.com/sportngin/brew-gem/pull/67
+
 #### v1.1.0
 
 * Allow arguments after `--` to be passed to `gem install`
