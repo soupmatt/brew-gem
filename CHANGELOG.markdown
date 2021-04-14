@@ -2,7 +2,7 @@
 
 * Update fetch signature
 
-  > https://github.com/sportngin/brew-gem/pull/67
+  > https://github.com/sportngin/brew-gem/pull/69
 
 #### v1.1.0
 
